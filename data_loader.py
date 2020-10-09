@@ -222,11 +222,10 @@ class ToTensorLab(object):
 
 		return {'imidx':torch.from_numpy(imidx), 'image': torch.from_numpy(tmpImg), 'label': torch.from_numpy(tmpLbl)}
 
+
 class SalObjDataset(Dataset):
-	def __init__(self,img_name_list,lbl_name_list,transform=None):
-		# self.root_dir = root_dir
-		# self.image_name_list = glob.glob(image_dir+'*.png')
-		# self.label_name_list = glob.glob(label_dir+'*.png')
+	def __init__(self, img_name_list, lbl_name_list, transform=None):
+
 		self.image_name_list = img_name_list
 		self.label_name_list = lbl_name_list
 		self.transform = transform
@@ -235,9 +234,6 @@ class SalObjDataset(Dataset):
 		return len(self.image_name_list)
 
 	def __getitem__(self,idx):
-
-		# image = Image.open(self.image_name_list[idx])#io.imread(self.image_name_list[idx])
-		# label = Image.open(self.label_name_list[idx])#io.imread(self.label_name_list[idx])
 
 		image = io.imread(self.image_name_list[idx])
 		imname = self.image_name_list[idx]
@@ -260,7 +256,16 @@ class SalObjDataset(Dataset):
 			image = image[:,:,np.newaxis]
 			label = label[:,:,np.newaxis]
 
-		sample = {'imidx':imidx, 'image':image, 'label':label}
+		masks = ([(label == v) for v in range(8)])
+		mask = np.concatenate(masks, axis=2).astype('float')
+		mask = np.uint8(mask * 255)
+		# import cv2
+		# for index in range(11):
+		# 	cv2.imshow('{}'.format(index), mask[:, :, index])
+		# 	cv2.waitKey(0)
+		# 	cv2.destroyAllWindows()
+
+		sample = {'imidx':imidx, 'image':image, 'label': mask}
 
 		if self.transform:
 			sample = self.transform(sample)
