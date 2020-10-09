@@ -120,7 +120,6 @@ bin/
 *.pkl
 
 # ignore serving models
-*saved_model.*
 *variables.data-*
 *variables.index*
 
